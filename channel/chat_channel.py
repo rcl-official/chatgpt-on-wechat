@@ -19,6 +19,42 @@ except Exception as e:
 
 handler_pool = ThreadPoolExecutor(max_workers=8)  # 处理消息的线程池
 
+post = open(os.path.join(os.path.dirname(__file__), "../assets/post.png"), "rb")
+
+INTRODUCE = [
+    Reply(
+        ReplyType.TEXT,
+        """
+🔰IP指纹与店铺一致，浏览器沙盒机制保证店铺安全与数据隐私。
+💡TK实时全量达人库，全维度搜索达人， 每日邀约1万+达人！
+🦾AI赋能，告别私信：定向消息模版， 支持自动回复达人消息。 7*24与达人沟通, 告别翻译, 告别时差
+
+TK店铺运营/达人建联/样品管理/订单管理/达人管理....你要的都在锐达!
+
+锐达主页: https://www.rclfortk.com
+安装文档: https://doc.rclfortk.com/installation
+使用教程: https://doc.rclfortk.com/user-manual
+""",
+    ),
+    Reply(ReplyType.IMAGE, post),
+    Reply(ReplyType.TEXT, "目前正在秋季特惠，详情请咨询客服"),
+    Reply(ReplyType.TEXT, "您有任何关于锐达的使用问题都可以直接问我哦！"),
+]
+
+price = open(os.path.join(os.path.dirname(__file__), "../assets/price.jpg"), "rb")
+
+PRICE = [
+    Reply(ReplyType.IMAGE, price),
+]
+
+AUTO_REPLY = {
+    "介绍一下": INTRODUCE,
+    "介绍一下锐达": INTRODUCE,
+    "发一下价格表": PRICE,
+    "价格表": PRICE,
+}
+
+
 
 # 抽象类, 它包含了与消息通道无关的通用处理逻辑
 class ChatChannel(Channel):
@@ -166,6 +202,13 @@ class ChatChannel(Channel):
         if context is None or not context.content:
             return
         logger.debug("[chat_channel] ready to handle context: {}".format(context))
+
+        # 处理固定回复
+        if context.type == ContextType.TEXT and context.content in AUTO_REPLY.keys():
+            for reply in AUTO_REPLY[context.content]:
+                self._send_reply(context, reply)
+            return
+
         # reply的构建步骤
         reply = self._generate_reply(context)
 
