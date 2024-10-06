@@ -41,7 +41,7 @@ TK店铺运营/达人建联/样品管理/订单管理/达人管理....你要的�
     Reply(ReplyType.TEXT, "您有任何关于锐达的使用问题都可以直接问我哦！"),
 ]
 
-price = open(os.path.join(os.path.dirname(__file__), "../assets/price.jpg"), "rb")
+price = open(os.path.join(os.path.dirname(__file__), "../assets/price.png"), "rb")
 
 PRICE = [
     Reply(ReplyType.IMAGE, price),
